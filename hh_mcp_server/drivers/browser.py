@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from typing import Optional
 
 from playwright.async_api import Browser, BrowserContext, Page, async_playwright
@@ -28,8 +29,12 @@ async def get_or_create_context() -> BrowserContext:
     _playwright = await async_playwright().start()
 
     _browser = await _playwright.chromium.launch(
+        executable_path=os.getenv("HH_CHROME_EXECUTABLE") or None,
         headless=_headless,
-        args=["--disable-blink-features=AutomationControlled"],
+        args=[
+            "--no-sandbox",
+            "--disable-blink-features=AutomationControlled",
+        ],
     )
 
     PROFILE_DIR.mkdir(parents=True, exist_ok=True)
